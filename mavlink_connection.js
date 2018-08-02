@@ -9,9 +9,12 @@ var app = express();
 var server = require('http').createServer(app);
 var path = require('path');
 
+
+
+
 var connection_type = 3;
 var connection_path = '';
-var connection_port = 5760;
+var connection_port = 14550;
 var connection_baud = 57600;
 
 var mavheader = require('./mavheader.js')
@@ -547,8 +550,8 @@ function connect_serial() {
   // via radio
   else if (connection_type == 1) {
     mav_port = new net.Socket();
-    mav_port.connect(connection_port, connection_path, function () {
-      emitter.emit('status_text', 'Connected to sitl via tcp:' + connection_path + ':' + connection_port);
+    mav_port.connect('127.0.0.1', connection_path, function () {
+      emitter.emit('status_text', 'Connected to sitl via tcp:' + '127.0.0.1' + ':' + '14550');
     });
   }
   else {
@@ -1368,7 +1371,8 @@ function mission_from_gcs(gcs_mission_list, takeoff_alt, is_loop) {
             mis_seq++,
             mavheader.MAV_CMD_NAV_TAKEOFF,
             0, 0, 0, 0, 0, 0,
-            takeoff_alt
+            50
+            // takeoff_alt
           );
           mission_list.push(mission);
         }
