@@ -1479,8 +1479,8 @@ function mission_cmd_land() {
 }
 
 //open parachute
-function mission_open_parachute(){
-  send_command_long(0, 0, 0, 0, 0, 0, 0, mavheader.MAV_CMD_DO_PARACHUTE, 1);
+function mission_open_parachute(open_parachute){
+  send_command_long(2, 0, 0, 0, 0, 0, 0, mavheader.MAV_CMD_DO_PARACHUTE, 1);
 }
 
 // set mode to land
@@ -1707,5 +1707,6 @@ module.exports = {
   port_send_switch_control:port_send_switch_control,
   send_offboard_control:send_offboard_control,
   // start_parachute = start_parachute,
+  mission_open_parachute: mission_open_parachute,
   mission_from_gcs: mission_from_gcs
 }

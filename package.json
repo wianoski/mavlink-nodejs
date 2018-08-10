@@ -21,6 +21,8 @@
     "serialport": "^6.2.0"
   },
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "mosquito": "^0.3.3",
+    "mqtt": "^2.18.3"
   }
 }

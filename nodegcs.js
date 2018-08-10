@@ -227,9 +227,9 @@ stdin.on('data', function(d) {
     case 'rtl':
       wahana.mission_cmd_rtl();
     break;
-    // case 'parachute':
-    //   wahana.mission_open_parachute();
-    // break;
+    case 'parachute':
+      wahana.mission_open_parachute(cmd_list[1]);
+    break;
     case 'land':
       wahana.mission_cmd_land();
     break;
