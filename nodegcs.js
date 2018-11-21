@@ -4,7 +4,38 @@ var charm = require('charm')();
 charm.pipe(process.stdout);
 charm.reset();
 
+// /*======================================
+// =        Express n SocketIO            =
+// ========================================*/
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+// const path = require('path');
+
 // charm.write('\033c');
+
+// /*============================
+// =            MQTT            =
+// ============================*/
+const mqtt = require('mqtt');
+const broker_server = 'mqtt://platform.antares.id';
+const options = {
+  clientId : 'mavlinkNode'+Math.random().toString(16).substr(2, 8),
+  port: 1883,
+  keepalive: 60
+};
+
+const mqttClient = mqtt.connect(broker_server, options);
+const topic = 'mavlink';
+
+
+
+
+// /*============================
+// =            Done            =
+// ============================*/
+
 
 var wahana = require('./mavlink_connection.js');
 var emitter = wahana.get_emitter();

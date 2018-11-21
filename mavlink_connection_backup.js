@@ -1484,6 +1484,7 @@ function mission_open_parachute(open_parachute){
 }
 
 //Changing speed
+//param({0=airspeed, 1=groundspeed}, target speed, throttle%, 0, 0, 0, 0)
 function mission_chaging_speed(speed, thr){
   send_command_long(0, speed, thr, 0, 0, 0, 0, mavheader.MAV_CMD_DO_CHANGE_SPEED, 1);
 }

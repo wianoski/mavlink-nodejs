@@ -4,12 +4,6 @@ var net = require('net');
 var EventEmitter = require("events").EventEmitter;
 var emitter = new EventEmitter();
 
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var path = require('path');
-
-
 
 
 var connection_type = 3;
