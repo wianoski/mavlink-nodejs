@@ -4,24 +4,13 @@ var charm = require('charm')();
 charm.pipe(process.stdout);
 charm.reset();
 
-// /*======================================
-// =        Express n SocketIO            =
-// ========================================*/
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io').listen(server);
-// const path = require('path');
-
-// charm.write('\033c');
-
 // /*============================
 // =            MQTT            =
 // ============================*/
 const mqtt = require('mqtt');
 const broker_server = 'mqtt://platform.antares.id';
 const options = {
-  clientId : 'mavlinkNode'+Math.random().toString(16).substr(2, 8),
+  clientId: 'mavlinkNode' + Math.random().toString(16).substr(2, 8),
   port: 1883,
   keepalive: 60
 };
@@ -30,11 +19,38 @@ const mqttClient = mqtt.connect(broker_server, options);
 const topic = 'mavlink';
 
 
+// /*============================
+// =            Done            =
+// ============================*/
 
+// /*======================================
+// =        Express n SocketIO            =
+// ========================================*/
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, 'webs')));
+const ports = 1144;
+server.listen(ports);
+
+/// ===============API Start here=============
+app.get('/pubsMavlink', (req,res,next) => {
+  mqttClient.publish("node/mavlibk", "started");
+  res.json("Mavlink started...")
+})
+
+
+/// =================API End here=============
+// charm.write('\033c');
 
 // /*============================
 // =            Done            =
 // ============================*/
+
+
 
 
 var wahana = require('./mavlink_connection.js');
@@ -54,12 +70,12 @@ grey
 * */
 var stdin = process.openStdin();
 
-function custom_prompt(){
-    charm.write('➜  '.cyan.bold);
-    if(wahana.get_mode_str() != undefined){
-      charm.write(wahana.get_mode_str().magenta);
-      charm.write(' '.cyan);
-    }
+function custom_prompt() {
+  charm.write('➜  '.cyan.bold);
+  if (wahana.get_mode_str() != undefined) {
+    charm.write(wahana.get_mode_str().magenta);
+    charm.write(' '.cyan);
+  }
 }
 
 var connected = false;
@@ -81,104 +97,102 @@ var curwp = 0;
 var bat = 0.0;
 var status_his = [];
 
-function put_status_his(text){
+function put_status_his(text) {
   status_his.push(text);
-  if(status_his.length>5){
-    status_his.splice(0,1);
+  if (status_his.length > 5) {
+    status_his.splice(0, 1);
   }
 }
 
 var refreshed = false;
 
 function refresh_cmdline() {
-  if(refreshed){
+  if (refreshed) {
     charm.push();
   }
-  charm.position(0,1);
-  if(connected){
+  charm.position(0, 1);
+  if (connected) {
     charm.write('Connected\t'.green.bold);
-  }
-  else{
+  } else {
     charm.write('Disconnected\t'.red.bold);
   }
   charm.write(wahana.get_mode_str().magenta.bold);
   charm.write('\t'.cyan);
-  if(arm_status){
+  if (arm_status) {
     charm.write('ARM\t'.yellow.bold);
-  }
-  else{
+  } else {
     charm.write('DISARM\t'.grey.bold);
   }
-  var tmp_str = 'SatNum: '+sat_num+'\t';
+  var tmp_str = 'SatNum: ' + sat_num + '\t';
   charm.write(tmp_str.cyan);
-  tmp_str = 'HDOP: '+HDOP+'\t';
+  tmp_str = 'HDOP: ' + HDOP + '\t';
   charm.write(tmp_str.cyan);
-  tmp_str = 'VDOP: '+VDOP+'\t\t';
+  tmp_str = 'VDOP: ' + VDOP + '\t\t';
   charm.write(tmp_str.cyan);
-  tmp_str = 'Battery: '+bat+'V\t';
-  charm.write(tmp_str.cyan);
-
-  charm.position(0,2);
-  tmp_str = 'Pitch: '+pitch+'\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Roll: '+roll+'\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Yaw: '+yaw+'\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Lat: '+lat+'\t\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Lng: '+lng+'\t';
-  charm.write(tmp_str.cyan);
-  
-  charm.position(0,3);
-  tmp_str = 'X-Speed: '+vx+'m/s\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Y-Speed: '+vy+'m/s\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Z-Speed: '+vz+'m/s\t';
-  charm.write(tmp_str.cyan);
-  tmp_str = 'Height: '+alt+'m\t';
+  tmp_str = 'Battery: ' + bat + 'V\t';
   charm.write(tmp_str.cyan);
 
+  charm.position(0, 2);
+  tmp_str = 'Pitch: ' + pitch + '\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Roll: ' + roll + '\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Yaw: ' + yaw + '\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Lat: ' + lat + '\t\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Lng: ' + lng + '\t';
+  charm.write(tmp_str.cyan);
 
-  for(var i=0;i<5;i++){
-    charm.position(0, 4+i);
+  charm.position(0, 3);
+  tmp_str = 'X-Speed: ' + vx + 'm/s\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Y-Speed: ' + vy + 'm/s\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Z-Speed: ' + vz + 'm/s\t';
+  charm.write(tmp_str.cyan);
+  tmp_str = 'Height: ' + alt + 'm\t';
+  charm.write(tmp_str.cyan);
+
+  charm.write('Starting server on : '.cyan.bold + ports + '\n');
+  for (var i = 0; i < 5; i++) {
+
+    charm.position(0, 4 + i);
     charm.erase('line');
     var line = '>> ';
-    if(i<status_his.length){
-      line += status_his[i];      
+    if (i < status_his.length) {
+      line += status_his[i];
     }
 
     charm.write(line.yellow);
   }
 
-  charm.position(0,9);
+  charm.position(0, 9);
+
   charm.write('➜ nodegcs v1.0'.cyan.bold);
-  charm.position(0,10);
-  if(refreshed){
+  charm.position(0, 10);
+  if (refreshed) {
     charm.pop();
   }
   refreshed = true;
 }
 
-function is_tcp_connection(path){
+function is_tcp_connection(path) {
   return path.indexOf(':') > -1;
 }
 
-function start_connection(){
-  if(is_tcp_connection(port_path)){
+function start_connection() {
+  if (is_tcp_connection(port_path)) {
     var ip_addr = port_path.split(':')[0];
     var ip_port = port_path.split(':')[1];
     wahana.set_connection(1, ip_addr, parseInt(ip_port));
-  }
-  else if(!wahana.check_serial()){
+  } else if (!wahana.check_serial()) {
     // console.log('Build new')
     wahana.set_connection(0, port_path, 57600);
-  }
-  else{
+  } else {
     wahana.resume_serial();
   }
-  wahana.set_default_stream_rates(1,1,1,1,1,1,0,0);
+  wahana.set_default_stream_rates(1, 1, 1, 1, 1, 1, 0, 0);
   wahana.set_custom_mode(6);
 }
 
@@ -187,92 +201,91 @@ var connected = false;
 // custom_prompt();
 refresh_cmdline();
 
-stdin.on('data', function(d) {
+stdin.on('data', function (d) {
   var cmd_str = d.toString().trim();
   /*console.log(colors.blue(cmd_str));*/
   var cmd_list = cmd_str.split(' ')
-  switch(cmd_list[0]){
+  switch (cmd_list[0]) {
     case 'start':
-      if(cmd_list.length > 1){
+      if (cmd_list.length > 1) {
         wahana.set_connection(0, cmd_list[1], parseInt(cmd_list[2]));
-      }
-      else{
+      } else {
         //conn port mavproxy
         // wahana.set_connection(1, 127.0.0.1, 14550);
         wahana.set_connection(1, '127.0.0.1', 14550);
-        wahana.set_default_stream_rates(1,1,1,1,1,1,0,0);
+        wahana.set_default_stream_rates(1, 1, 1, 1, 1, 1, 0, 0);
       }
-    break;
+      break;
     case 'stop':
       wahana.pause_serial();
-    break;
+      break;
     case 'setmode':
       wahana.set_custom_mode(cmd_list[1]);
-    break;
+      break;
     case 'banner':
       wahana.send_banner();
-    break;
+      break;
     case 'version':
       wahana.send_version();
-    break;
+      break;
     case 'arm':
       wahana.set_arming();
-    break;
+      break;
     case 'disarm':
       wahana.set_disarming();
-    break;
+      break;
     case 'misat':
       wahana.mission_request_individual(cmd_list[1]);
-    break;
+      break;
     case 'miscnt':
       wahana.mission_request_list();
-    break;
+      break;
     case 'setcur':
       wahana.mission_set_current(cmd_list[1]);
-    break;
+      break;
     case 'writewp':
       as.mission_write_waypoint(cmd_list[1], cmd_list[2], cmd_list[3], cmd_list[4], cmd_list[5], cmd_list[6], cmd_list[7], cmd_list[8]);
-    break;
+      break;
     case 'writertl':
       wahana.mission_write_rtl(cmd_list[1], cmd_list[2], cmd_list[3], cmd_list[4]);
-    break;
+      break;
     case 'upmis':
       wahana.init_mission_trans();
-    break;
+      break;
     case 'misall':
       wahana.mission_get_all();
-    break;
+      break;
     case 'misprint':
       wahana.mission_print();
-    break;
+      break;
     case 'misupalt':
       /*var fields = JSON.parse(cmd_list[1]);*/
       wahana.mission_update_alt(cmd_list[1], cmd_list[2]);
-    break;
+      break;
     case 'misstart':
       wahana.mission_cmd_mission_start();
-    break;
+      break;
     case 'takeoff':
       wahana.mission_cmd_takeoff(cmd_list[1]);
-    break;
+      break;
     case 'rtl':
       wahana.mission_cmd_rtl();
-    break;
+      break;
     case 'parachute':
       wahana.mission_open_parachute(cmd_list[1]);
-    break;
+      break;
     case 'land':
       wahana.mission_cmd_land();
-    break;
+      break;
     case 'getp':
       wahana.param_request_single(cmd_list[1]);
-    break;
+      break;
     case 'setp':
       wahana.param_set_value(cmd_list[1], cmd_list[2], cmd_list[3]);
-    break;
+      break;
     case '':
       /*console.log(wahana.get_base_status());*/
-    break;
+      break;
     default:
       put_status_his('command not supported');
   }
@@ -281,62 +294,71 @@ stdin.on('data', function(d) {
   refresh_cmdline();
 });
 
-emitter.on('connection_regained', function(){
+emitter.on('connection_regained', function () {
   put_status_his('connection regained\n'.yellow);
   connected = true;
 });
 
-emitter.on('arming', function(){
+emitter.on('arming', function () {
   arm_status = true;
 });
 
-emitter.on('disarming', function(){
+emitter.on('disarming', function () {
   arm_status = false;
 });
 
-emitter.on('command_ack', function(field){
-  if(field.result == 0){
-    process.stdout.clearLine();  // clear current text
-    process.stdout.cursorTo(0);  // move cursor to beginning of line
+emitter.on('command_ack', function (field) {
+  if (field.result == 0) {
+    process.stdout.clearLine(); // clear current text
+    process.stdout.cursorTo(0); // move cursor to beginning of line
     put_status_his('command success'.yellow);
   }
 });
 
-emitter.on('attitude', function(field){
+emitter.on('attitude', function (field) {
   pitch = field.pitch.toFixed(3);
   roll = field.roll.toFixed(3);
   yaw = field.yaw.toFixed(3);
 });
 
-emitter.on('gps_raw_int', function(field){
+emitter.on('gps_raw_int', function (field) {
   hdop = field.eph;
   vdop = field.epv;
   sat_num = field.satellites_visible;
 });
 
-emitter.on('global_postion', function(field){
-  lat = (field.lat/1E7).toFixed(6);
-  lng = (field.lon/1E7).toFixed(6);
-  alt = (field.relative_alt/1000).toFixed(2);
-  vx = (field.vx/1E2).toFixed(2);
-  vy = (field.vy/1E2).toFixed(2);
-  vz = (field.vz/1E2).toFixed(2);
+emitter.on('global_postion', function (field) {
+  lat = (field.lat / 1E7).toFixed(6);
+  lng = (field.lon / 1E7).toFixed(6);
+  alt = (field.relative_alt / 1000).toFixed(2);
+  vx = (field.vx / 1E2).toFixed(2);
+  vy = (field.vy / 1E2).toFixed(2);
+  vz = (field.vz / 1E2).toFixed(2);
 });
 
-emitter.on('sys_status', function(field){
-  bat = field.battery_voltage/1E3;
+emitter.on('sys_status', function (field) {
+  bat = field.battery_voltage / 1E3;
 });
 
-emitter.on('status_text', function(field){
+emitter.on('status_text', function (field) {
   put_status_his(field);
   refresh_cmdline();
 });
 
-emitter.on('serial_list', function(field){
-  for(var i = 0;i < field.length; i++){
+emitter.on('serial_list', function (field) {
+  for (var i = 0; i < field.length; i++) {
     put_status_his(field[i].comName);
   }
   refresh_cmdline();
 });
+
+io.on('openMavlink', (socket) => {
+  console.log('Connected');
+
+  socket.on('pubMavlink', (data) => {
+    mqttClient.publish('mavSend', data.data.toString());
+    console.log('msg publish');
+  })
+})
 
 setInterval(refresh_cmdline, 1000);

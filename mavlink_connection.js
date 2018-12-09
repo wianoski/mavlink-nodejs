@@ -4,6 +4,14 @@ var net = require('net');
 var EventEmitter = require("events").EventEmitter;
 var emitter = new EventEmitter();
 
+const mqtt = require('mqtt');
+const broker_server = 'mqtt://platform.antares.id';
+const options = {
+  clientId: 'mavlink' + Math.random().toString(16).substr(2, 8),
+  port: 1883,
+  keepalive: 60
+};
+const clientMqtt = mqtt.connect(broker_server, options);
 
 
 var connection_type = 3;
