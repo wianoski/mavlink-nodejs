@@ -23,6 +23,8 @@ const topic = 'mavlink';
 // =            Done            =
 // ============================*/
 
+
+
 // /*======================================
 // =        Express n SocketIO            =
 // ========================================*/
@@ -37,8 +39,8 @@ const ports = 1144;
 server.listen(ports);
 
 /// ===============API Start here=============
-app.get('/pubsMavlink', (req,res,next) => {
-  mqttClient.publish("node/mavlibk", "started");
+app.get('/pubsMavlink', (req, res, next) => {
+  mqttClient.publish("node/mavlink", "started");
   res.json("Mavlink started...")
 })
 

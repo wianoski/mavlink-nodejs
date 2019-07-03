@@ -8,6 +8,8 @@ var pkg = require(path.resolve('package.json'))
 var rc = require('./rc')(pkg)
 var log = require('./log')(rc, process.env)
 var download = require('./download')
+var asset = require('./asset')
+var util = require('./util')
 
 var prebuildClientVersion = require('./package.json').version
 if (rc.version) {
@@ -50,10 +52,25 @@ if (!isNpm && /node_modules/.test(process.cwd())) {
   process.exit(1)
 }
 
-download(opts, function (err) {
-  if (err) {
-    log.warn('install', err.message)
-    return process.exit(1)
-  }
-  log.info('install', 'Successfully installed prebuilt binary!')
-})
+var startDownload = function (downloadUrl) {
+  download(downloadUrl, opts, function (err) {
+    if (err) {
+      log.warn('install', err.message)
+      return process.exit(1)
+    }
+    log.info('install', 'Successfully installed prebuilt binary!')
+  })
+}
+
+if (opts.token) {
+  asset(opts, function (err, assetId) {
+    if (err) {
+      log.warn('install', err.message)
+      return process.exit(1)
+    }
+
+    startDownload(util.getAssetUrl(opts, assetId))
+  })
+} else {
+  startDownload(util.getDownloadUrl(opts))
+}

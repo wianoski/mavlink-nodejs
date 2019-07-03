@@ -53,7 +53,8 @@ module.exports = function (pkg) {
       version: 'v',
       download: 'd',
       'build-from-source': 'compile',
-      compile: 'c'
+      compile: 'c',
+      token: 'T'
     }
   }))
 

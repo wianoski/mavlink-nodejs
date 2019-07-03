@@ -3,4 +3,5 @@ $(document).ready(function(){
     socket.on('mavlink', (data) => {
         console.log(data);
     })
+
 })
